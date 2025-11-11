@@ -22,8 +22,8 @@ Simulation results show a ~40% reduction in effective misdetection risk compared
 Installation
 
 1. Clone this repository:
-   git clone https://github.com/<your_username>/RiskAwareLiDAR.git
-   cd RiskAwareLiDAR
+   git clone https://github.com/Rubenwosten/Project_Lidar.git
+   cd Project_Lidar
 
 2. Install Nuscenes:
    https://www.nuscenes.org/nuscenes#download
@@ -35,7 +35,7 @@ Installation
 Running the Simulation
 
 1. Configure dataset and simulation parameters in test.py:
-   dataroot = r"C:/path/to/nuscenes"
+   dataroot = r"C:/path/to/project_folder"
    map_name = 'boston-seaport'
    LIDAR_RANGE = 100
    RESOLUTION = 0.5
