@@ -1,0 +1,71 @@
+
+Add code (below) between functions def layers_on_point (line 440) and def record_on_point (line 450).
+
+def layers_on_point_v2(self, x: float, y: float, record: Dict[str,Dict[str, Dict[str, List[str]]]], layer_names: List[str] = None) -> Dict[str, str]:
+        """
+        Returns all the polygonal layers that a particular point is on.
+        :param x: x coordinate of the point of interest.
+        :param y: y coordinate of the point of interest.
+        :param layer_names: The names of the layers to search for.
+        :param record: records of patch
+        :return: All the polygonal layers that a particular point is on. {<layer name>: <list of tokens>}
+        """
+        return self.explorer.layers_on_point_v2(x, y, record=record, layer_names=layer_names)
+
+
+
+Next add code (below) between functions def layers_on_point (line 1445) and def record_on_point (line 1473).
+
+def layers_on_point_v2(self, x: float, y: float, record: Dict[str,Dict[str, Dict[str, List[str]]]], layer_names: List[str] = None) -> Dict[str, str]:
+        """
+        Returns all the polygonal layers that a particular point is on.
+        :param x: x coordinate of the point of interest.
+        :param y: y coordinate of the point of interest.
+        :param layer_names: The names of the layers to search for.
+        :return: All the polygonal layers that a particular point is on.
+        """
+        # Default option.
+        if layer_names is None:
+            layer_names = self.map_api.non_geometric_polygon_layers
+
+        layers_on_point = dict()
+        for layer_name in layer_names:
+            layers_on_point.update({layer_name: self.record_on_point_v2(x, y, record, layer_name)})
+
+        return layers_on_point
+
+    def record_on_point_v2(self, x: float, y: float, rec: Dict[str,Dict[str, Dict[str, List[str]]]],  layer_name: str) -> str:
+        """
+        Query what record of a layer a particular point is on.
+        :param x: x coordinate of the point of interest.
+        :param y: y coordinate of the point of interest.
+        :param layer_name: The non geometric polygonal layer name that we are interested in.
+        :return: The first token of a layer a particular point is on or '' if no layer is found.
+        """
+        if layer_name not in self.map_api.non_geometric_polygon_layers:
+            raise ValueError("{} is not a polygon layer".format(layer_name))
+
+        point = Point(x, y)
+        records= rec[layer_name]
+        
+
+        if layer_name == 'drivable_area':
+            for record in records:
+                polygons =records[record]['polygon_tokens']
+                polygons = [self.map_api.extract_polygon(polygon_token) for polygon_token in polygons]
+                for polygon in polygons:
+                    if point.within(polygon):
+                        return records[record]['token']
+                    else:
+                        pass
+        else:
+            for record in records:
+                polygon = records[record]['polygon_token']
+                polygon = self.map_api.extract_polygon(polygon)
+                if point.within(polygon):
+                    return records[record]['token']
+                else:
+                    pass
+
+        # If nothing is found, return an empty string.
+        return ''
